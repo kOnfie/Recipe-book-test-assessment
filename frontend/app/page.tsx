@@ -1,5 +1,4 @@
 import { getAllRecipes } from "@/src/lib/api";
-
 import { ListOfRecipe } from "@/src/components/ListOfRecipe/ListOfRecipe";
 
 export default async function Home() {
