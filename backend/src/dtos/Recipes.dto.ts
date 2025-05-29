@@ -100,7 +100,7 @@ export class MealPreviewDto {
   strMealThumb: string;
 }
 
-export class MealsByCategoryResponseDto {
+export class MealsFilterResponseDto {
   @ApiProperty({ type: [MealPreviewDto] })
   meals: MealPreviewDto[];
 }

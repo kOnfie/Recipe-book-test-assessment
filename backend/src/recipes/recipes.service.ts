@@ -2,24 +2,17 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import {
   MealDetailResponseDto,
-  MealsByCategoryResponseDto,
+  MealsFilterResponseDto,
 } from 'src/dtos/Recipes.dto';
+
+const filterMap: Record<string, string> = {
+  category: 'c',
+  ingredient: 'i',
+  country: 'a',
+};
 
 @Injectable()
 export class RecipesService {
-  async getAllAvailableRecipes(): Promise<MealDetailResponseDto> {
-    try {
-      const allAvailableRecipes = await axios.get(
-        'https://www.themealdb.com/api/json/v1/1/search.php?s=',
-      );
-
-      return allAvailableRecipes.data as MealDetailResponseDto;
-    } catch (error) {
-      console.error(error);
-      throw new Error('Failed to fetch recipes');
-    }
-  }
-
   async getRecipeById(id: string): Promise<MealDetailResponseDto> {
     try {
       const recipeById = await axios.get(
@@ -33,46 +26,22 @@ export class RecipesService {
     }
   }
 
-  async getRecipesByIngredient(
-    ingredient: string,
-  ): Promise<MealsByCategoryResponseDto> {
-    try {
-      console.log(ingredient);
-      const recipeByIngredient = await axios.get(
-        `https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`,
-      );
+  async getRecipes(
+    filter: 'all' | 'category' | 'ingredient' | 'country',
+    value: string,
+  ): Promise<MealsFilterResponseDto> {
+    let fetchUrl = 'https://www.themealdb.com/api/json/v1/1/';
 
-      return recipeByIngredient.data as MealsByCategoryResponseDto;
-    } catch (error) {
-      console.error(error);
-      throw new Error('Failed to fetch recipes');
+    if (filter === 'all') {
+      fetchUrl += 'search.php?s=';
+    } else {
+      fetchUrl += `filter.php?${filterMap[filter]}=${value}`;
     }
-  }
 
-  async getRecipesByCountry(
-    country: string,
-  ): Promise<MealsByCategoryResponseDto> {
     try {
-      const recipeByCountry = await axios.get(
-        `https://www.themealdb.com/api/json/v1/1/filter.php?a=${country}`,
-      );
+      const recipeByFilter = await axios.get(fetchUrl);
 
-      return recipeByCountry.data as MealsByCategoryResponseDto;
-    } catch (error) {
-      console.error(error);
-      throw new Error('Failed to fetch recipes');
-    }
-  }
-
-  async getRecipesByCategory(
-    category: string,
-  ): Promise<MealsByCategoryResponseDto> {
-    try {
-      const recipeByCategory = await axios.get(
-        `https://www.themealdb.com/api/json/v1/1/filter.php?c=${category}`,
-      );
-
-      return recipeByCategory.data as MealsByCategoryResponseDto;
+      return recipeByFilter.data as MealsFilterResponseDto;
     } catch (error) {
       console.error(error);
       throw new Error('Failed to fetch recipes');
